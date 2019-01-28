@@ -7,3 +7,6 @@ This repository contains an example docker-compose setup to run the following to
 * https://docs.docker.com/notary/[docker-notary]
 * https://docs.docker.com/registry/[docker-registry]
 
+Blog posts
+
+https://werner-dijkerman.nl/2019/01/28/scanning-docker-images-with-coreos-clair/[Scanning docker images with CoreOS Clair]
