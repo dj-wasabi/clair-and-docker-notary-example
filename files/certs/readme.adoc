@@ -7,10 +7,6 @@ A `ca.conf` file is placed as well, as this contains some configuration that is 
 .Commands executed
 [source,bash]
 ----
-openssl genrsa -out clair.example.local.key 4096
-openssl req -new -config ca.conf -extensions usr_cert -sha256 -subj "/C=EU/ST=Example/L=Example/O=Example/CN=clair.example.local" -key clair.example.local.key -out clair.example.local.csr
-openssl ca -batch -config ca.conf -notext -in clair.example.local.csr -out clair.example.local.crt
-
 openssl genrsa -out notary-server.example.local.key 4096
 openssl req -new -config ca.conf -extensions usr_cert -sha256 -subj "/C=EU/ST=Example/L=Example/O=Example/CN=notary-server.example.local" -key notary-server.example.local.key -out notary-server.example.local.csr
 openssl ca -batch -config ca.conf -notext -in notary-server.example.local.csr -out notary-server.example.local.crt
