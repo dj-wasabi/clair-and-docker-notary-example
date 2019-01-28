@@ -1,0 +1,134 @@
+version: "3.3"
+
+services:
+  registry-server:
+    image: registry:2
+    restart: always
+    container_name: registry-server
+    networks:
+      notary:
+      registry:
+        aliases:
+          - registry.example.local
+    ports:
+      - 5000:5000
+    environment:
+      REGISTRY_AUTH: htpasswd
+      REGISTRY_AUTH_HTPASSWD_PATH: /opt/auth/htpasswd
+      REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
+      REGISTRY_HTTP_TLS_CERTIFICATE: /opt/certs/registry.example.local.crt
+      REGISTRY_HTTP_TLS_KEY: /opt/certs/registry.example.local.key
+      REGISTRY_HTTP_SECRET: BTpFsd82m01jdyg7ubhew78huij%
+    volumes:
+      - registry_data:/var/lib/registry
+      - ./files/certs:/opt/certs
+      - ./files/auth:/opt/auth
+  notary-server:
+    image: wdijkerman/notary-server:20190123
+    restart: always
+    container_name: notary-server
+    networks:
+      db:
+      notary:
+        aliases:
+          - notary-server.example.local
+    ports:
+      - "8080"
+      - "4443:4443"
+    entrypoint: /usr/bin/env sh
+    command: -c "./migrations/migrate.sh && notary-server -config=/opt/notary/notary-server-config.json"
+    volumes:
+      - ./files/certs:/opt/certs
+      - ./files/config:/opt/notary
+    depends_on:
+      - notary-db
+      - notary-signer
+  notary-signer:
+    image: wdijkerman/notary-signer:20190123
+    restart: always
+    container_name: notary-signer
+    networks:
+      db:
+      notary:
+        aliases:
+          - notary-signer.example.local
+    entrypoint: /usr/bin/env sh
+    command: -c "./migrations/migrate.sh && notary-signer -config=/opt/notary/notary-signer-config.json"
+    volumes:
+      - ./files/certs:/opt/certs
+      - ./files/config:/opt/notary
+    depends_on:
+      - notary-db
+  notary-db:
+    image: mariadb:10.1.28
+    container_name: mysql
+    networks:
+      - db
+    volumes:
+      - ./files/mysql-initdb.d:/docker-entrypoint-initdb.d
+      - notary_data:/var/lib/mysql
+    environment:
+      - TERM=dumb
+      - MYSQL_ALLOW_EMPTY_PASSWORD="true"
+    command: mysqld --innodb_file_per_table
+
+  clair-db:
+    container_name: postgres
+    image: postgres:latest
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: password
+    networks:
+      - registry
+      - clair
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  clair:
+    container_name: clair
+    image: quay.io/coreos/clair:latest
+    restart: unless-stopped
+    depends_on:
+      - clair-db
+    ports:
+      - "6060-6061:6060-6061"
+    networks:
+      registry:
+      clair:
+        aliases:
+          - clair.example.local
+    links:
+      - clair-db
+    volumes:
+      - clair_data:/tmp
+      - ./files/config/clair-config.yaml:/config/config.yaml
+    command: [-config, /config/config.yaml, -insecure-tls]
+
+  clair-scanner:
+    container_name: clair-scanner
+    image: wdijkerman/clair-scanner
+    networks:
+      - clair
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./example-whitelist.yaml:/tmp/whitelist.yaml
+    entrypoint: /bin/entrypoint.sh -w /tmp/whitelist.yaml --clair="http://clair.example.local:6060"
+
+volumes:
+  notary_data:
+    external: false
+  registry_data:
+    external: false
+  clair_data:
+    external: false
+  postgres_data:
+    external: false
+networks:
+  registry:
+    external: false
+  db:
+    external: false
+  notary:
+    external: false
+  clair:
+    external: false

@@ -1,0 +1,23 @@
+{
+    "server": {
+        "http_addr": ":4443",
+        "tls_key_file": "/opt/certs/notary-server.example.local.key",
+        "tls_cert_file": "/opt/certs/notary-server.example.local.crt"
+    },
+    "trust_service": {
+        "type": "remote",
+        "hostname": "notary-signer.example.local",
+        "port": "7899",
+        "tls_ca_file": "/opt/certs/ca-root.crt",
+        "key_algorithm": "ecdsa",
+        "tls_client_cert": "/opt/certs/notary-server.example.local.crt",
+        "tls_client_key": "/opt/certs/notary-server.example.local.key"
+    },
+    "logging": {
+        "level": "debug"
+    },
+    "storage": {
+        "backend": "mysql",
+        "db_url": "server@tcp(mysql:3306)/notaryserver?parseTime=True"
+    }
+}

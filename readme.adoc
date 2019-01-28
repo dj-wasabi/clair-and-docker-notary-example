@@ -1,0 +1,9 @@
+= clair-and-docker-notary-example
+
+This repository contains an example docker-compose setup to run the following tools:
+
+* https://github.com/coreos/clair[clair]
+* https://github.com/arminc/clair-scanner[clair-scanner]
+* https://docs.docker.com/notary/[docker-notary]
+* https://docs.docker.com/registry/[docker-registry]
+

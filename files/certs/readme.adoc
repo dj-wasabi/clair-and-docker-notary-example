@@ -1,0 +1,27 @@
+= certs
+
+These files are example SSL files that are used for the tools configured in the docker-compose in the root of this repository.
+
+A `ca.conf` file is placed as well, as this contains some configuration that is needed to properly sign SSL certificates that are used with go-applications.
+
+.Commands executed
+[source,bash]
+----
+openssl genrsa -out clair.example.local.key 4096
+openssl req -new -config ca.conf -extensions usr_cert -sha256 -subj "/C=EU/ST=Example/L=Example/O=Example/CN=clair.example.local" -key clair.example.local.key -out clair.example.local.csr
+openssl ca -batch -config ca.conf -notext -in clair.example.local.csr -out clair.example.local.crt
+
+openssl genrsa -out notary-server.example.local.key 4096
+openssl req -new -config ca.conf -extensions usr_cert -sha256 -subj "/C=EU/ST=Example/L=Example/O=Example/CN=notary-server.example.local" -key notary-server.example.local.key -out notary-server.example.local.csr
+openssl ca -batch -config ca.conf -notext -in notary-server.example.local.csr -out notary-server.example.local.crt
+
+openssl genrsa -out notary-signer.example.local.key 4096
+openssl req -new -config ca.conf -extensions usr_cert -sha256 -subj "/C=EU/ST=Example/L=Example/O=Example/CN=notary-signer.example.local" -key notary-signer.example.local.key -out notary-signer.example.local.csr
+openssl ca -batch -config ca.conf -notext -in notary-signer.example.local.csr -out notary-signer.example.local.crt
+
+openssl genrsa -out registry.example.local.key 4096
+openssl req -new -config ca.conf -extensions usr_cert -sha256 -subj "/C=EU/ST=Example/L=Example/O=Example/CN=registry.example.local" -key registry.example.local.key -out registry.example.local.csr
+openssl ca -batch -config ca.conf -notext -in registry.example.local.csr -out registry.example.local.crt
+----
+
+_All files can only be used for demonstration purposes or as ideas for your own setup._
