@@ -101,6 +101,7 @@ services:
       - clair-db
     volumes:
       - clair_data:/tmp
+      - ./files/certs:/opt/certs
       - ./files/config/clair-config.yaml:/config/config.yaml
     command: [-config, /config/config.yaml, -insecure-tls]
 
