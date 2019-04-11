@@ -113,7 +113,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./example-whitelist.yaml:/tmp/whitelist.yaml
-    entrypoint: /bin/entrypoint.sh -w /tmp/whitelist.yaml --clair="http://clair.example.local:6060"
+    entrypoint: /bin/entrypoint.sh -w /tmp/whitelist.yaml --clair="https://clair.example.local:6060"
 
 volumes:
   notary_data:

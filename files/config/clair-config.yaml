@@ -47,7 +47,8 @@ clair:
     # https://github.com/coreos/etcd-ca
     # https://github.com/cloudflare/cfssl
     servername: clair.example.local
-    cafile: /opt/certs/ca-root.crt
+    # Disabled cafile, otherwise we have to provide client TLS certificates with Clair.
+    # cafile: /opt/certs/ca-root.crt
     keyfile: /opt/certs/clair.example.local.key
     certfile: /opt/certs/clair.example.local.crt
 
